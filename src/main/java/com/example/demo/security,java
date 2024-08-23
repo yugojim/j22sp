@@ -1,28 +1,15 @@
-@Configuration
-@EnableWebSecurity
-public class SecurityConfig {
+@Service
+public class CustomUserDetailsService implements UserDetailsService {
 
-	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		http
-			.authorizeHttpRequests((authorize) -> authorize
-				.anyRequest().authenticated()
-			)
-			.httpBasic(Customizer.withDefaults())
-			.formLogin(Customizer.withDefaults());
-
-		return http.build();
-	}
-
-	@Bean
-	public UserDetailsService userDetailsService() {
-		UserDetails userDetails = User.withDefaultPasswordEncoder()
-			.username("user")
-			.password("password")
-			.roles("USER")
-			.build();
-
-		return new InMemoryUserDetailsManager(userDetails);
-	}
-
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        // 在實際應用中，您可以從資料庫或其他存儲中加載使用者信息
+        // 這裡簡單起見，我們創建一個使用者
+        UserDetails user = User.builder()
+            .username("user")
+            .password("{noop}password") // {noop} 表示不使用密碼編碼器
+            .roles("USER") // 分配 USER 角色
+            .build();
+        return user;
+    }
 }
